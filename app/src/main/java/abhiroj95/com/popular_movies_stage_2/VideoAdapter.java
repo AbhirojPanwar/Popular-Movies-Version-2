@@ -29,9 +29,10 @@ public class VideoAdapter extends ArrayAdapter<Video> {
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.video_row_layout,parent,false);
         }
         ImageView play=(ImageView) convertView.findViewById(R.id.play_icon);
-        Picasso.with(getContext()).load(R.drawable.play).centerInside().fit().into(play);
+        Picasso.with(getContext()).load(R.drawable.play).resize(50,50).into(play);
         TextView trailer=(TextView) convertView.findViewById(R.id.trailer);
         trailer.setText(Video.videarray[position].name);
+        trailer.setTextSize(18);
 
 
         return convertView;
