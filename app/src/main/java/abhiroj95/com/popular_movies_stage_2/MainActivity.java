@@ -1,11 +1,14 @@
 package abhiroj95.com.popular_movies_stage_2;
 
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -18,40 +21,64 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
 
 public class MainActivity extends ActionBarActivity implements MovieGridFrag.MovieListener{
 
     public static String user_pref=null;
     public static String BASE_URL="http://api.themoviedb.org/3/movie/";
-    public static final String api_key="";
+
     public static String final_URL=null;
-    public static Movie[] movieArray;
     ProgressDialog loader;
     RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
+        loader=new ProgressDialog(this);
+        loader.setMessage("Please Wait...");
+        loader.show();
+        if(savedInstanceState!=null)
+        {
+            user_pref=savedInstanceState.getString("USR_PREF");
+        }
 
-
+        try{
+            Movie.movieArray=(Movie[])getLastNonConfigurationInstance();
+        }
+        catch(NullPointerException e)
+        {
+            if(savedInstanceState!=null) finish(); // Finish the activity
+        }
         if(user_pref==null)
         {
             user_pref="popular?";
         }
-        final_URL=BASE_URL+user_pref+api_key;
-        final_URL.trim();
         makeRequest();
-        setContentView(R.layout.activity_main);
 
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("USR_PREF",user_pref);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return Movie.movieArray;
     }
 
 
     public void makeRequest()
     {
-        loader=new ProgressDialog(this);
-        loader.setMessage("Please Wait...");
-        loader.show();
+        final_URL=BASE_URL+user_pref+Movie.api_key;
+        final_URL.trim();
         requestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, final_URL, null,
                 new Response.Listener<JSONObject>() {
@@ -61,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
                         try{
                             JSONArray ja = response.getJSONArray("results");
 
-                            movieArray=new Movie[ja.length()];
+                            Movie.movieArray=new Movie[ja.length()];
 
                             for(int i=0; i < ja.length(); i++){
 
@@ -81,10 +108,16 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
                                 movie.setmRelDate(relDate);
                                 movie.setVoteAvg(vote_avg);
 
-                                movieArray[i]=movie;
+                                Movie.movieArray[i]=movie;
                             }
 
                             loader.dismiss();
+
+                            MovieGridFrag mgf=new MovieGridFrag();
+                            mgf.movieList= Arrays.asList(Movie.movieArray);
+                            FragmentTransaction ft=getFragmentManager().beginTransaction();
+                            ft.replace(R.id.list_container,mgf);
+                            ft.commit();
 
                         }catch(JSONException e){e.printStackTrace();}
                     }
@@ -116,7 +149,16 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_popular) {
+           user_pref="popular?";
+            makeRequest();
+            return true;
+        }
+
+        if (id == R.id.action_topRated)
+        {
+            user_pref="top_rated?";
+            makeRequest();
             return true;
         }
 
@@ -126,5 +168,22 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
     @Override
     public void itemClicked(int id) {
 
+        View view=findViewById(R.id.detail_container);
+        if(view!=null)
+        {
+           MovieDetailFrag mdf=new MovieDetailFrag();
+            mdf.position=id;
+            FragmentTransaction ft=getFragmentManager().beginTransaction();
+            ft.addToBackStack(null);
+            ft.replace(R.id.detail_container,mdf);
+            ft.commit();
+
+        }
+        else
+        {
+            Movie.position_fordetailfrag=id;
+            Intent i =new Intent(this,DetailActivity.class);
+            startActivity(i);
+        }
     }
 }

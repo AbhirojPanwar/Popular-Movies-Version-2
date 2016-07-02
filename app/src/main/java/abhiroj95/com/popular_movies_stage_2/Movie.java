@@ -12,6 +12,12 @@ public class Movie {
     String videoPath;
     String reviewPath;
     String _id;
+     static int position_fordetailfrag;
+    public static final String api_key="api_key=98ee66ec333fc7b3902c1f87cbfea17a";
+
+
+    public static Movie[] movieArray;
+
 
     public  void set_id(String id)
     {

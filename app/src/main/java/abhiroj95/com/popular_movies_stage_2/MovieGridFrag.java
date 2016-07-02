@@ -1,6 +1,7 @@
 package abhiroj95.com.popular_movies_stage_2;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,6 +32,11 @@ public class MovieGridFrag extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Activity context) {
+        this.movielistener=(MovieListener) context;
+        super.onAttach(context);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +52,7 @@ public class MovieGridFrag extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 if(movielistener!=null)
 {
+    int postions=position;
 movielistener.itemClicked(position);
 }
             }
