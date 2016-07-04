@@ -3,12 +3,16 @@ package abhiroj95.com.popular_movies_stage_2;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,6 +27,10 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import abhiroj95.com.popular_movies_stage_2.Data.Movie;
+import abhiroj95.com.popular_movies_stage_2.Data.Movie_Contract;
+import abhiroj95.com.popular_movies_stage_2.Data.MovieddbHelper;
+
 
 public class MainActivity extends ActionBarActivity implements MovieGridFrag.MovieListener{
 
@@ -32,6 +40,7 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
     public static String final_URL=null;
     ProgressDialog loader;
     RequestQueue requestQueue;
+    boolean HAS_VIEW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +54,9 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
         {
             user_pref=savedInstanceState.getString("USR_PREF");
         }
+
+        View view=findViewById(R.id.detail_container);
+        if(view!=null) HAS_VIEW=true;
 
         try{
             Movie.movieArray=(Movie[])getLastNonConfigurationInstance();
@@ -118,6 +130,8 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
                             FragmentTransaction ft=getFragmentManager().beginTransaction();
                             ft.replace(R.id.list_container,mgf);
                             ft.commit();
+                            if(HAS_VIEW)
+                            defaultforFrag();
 
                         }catch(JSONException e){e.printStackTrace();}
                     }
@@ -162,28 +176,51 @@ public class MainActivity extends ActionBarActivity implements MovieGridFrag.Mov
             return true;
         }
 
+        if(id==R.id.action_favorite)
+        {
+            SQLiteOpenHelper dbHep=new MovieddbHelper(this);
+            SQLiteDatabase db=dbHep.getReadableDatabase();
+            Cursor cursor = db.query(Movie_Contract.MovieEntry.TABLE_NAME, new String[]{Movie_Contract.MovieEntry.ID, Movie_Contract.MovieEntry.IMAGE}, null, null, null, null,null);
+        if(cursor.getCount()==0) Toast.makeText(this,"No favorite Movies Yet",Toast.LENGTH_SHORT).show();
+            else
+        {
+            favoritefragment ff=new favoritefragment();
+            getFragmentManager().beginTransaction().replace(R.id.list_container,ff).commit();
+
+        }
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void itemClicked(int id) {
 
-        View view=findViewById(R.id.detail_container);
-        if(view!=null)
+        Movie.position_fordetailfrag=id;
+        if(HAS_VIEW)
         {
            MovieDetailFrag mdf=new MovieDetailFrag();
-            mdf.position=id;
             FragmentTransaction ft=getFragmentManager().beginTransaction();
-            ft.addToBackStack(null);
             ft.replace(R.id.detail_container,mdf);
             ft.commit();
 
         }
         else
         {
-            Movie.position_fordetailfrag=id;
+
             Intent i =new Intent(this,DetailActivity.class);
             startActivity(i);
         }
+    }
+
+    public void defaultforFrag()
+    {
+        Movie.position_fordetailfrag=0;
+        MovieDetailFrag mdf=new MovieDetailFrag();
+        FragmentTransaction ft=getFragmentManager().beginTransaction();
+        ft.replace(R.id.detail_container,mdf);
+        ft.commit();
+
     }
 }

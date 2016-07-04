@@ -1,14 +1,21 @@
 package abhiroj95.com.popular_movies_stage_2;
 
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -24,11 +31,15 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import abhiroj95.com.popular_movies_stage_2.Data.Movie;
+import abhiroj95.com.popular_movies_stage_2.Data.Movie_Contract;
+import abhiroj95.com.popular_movies_stage_2.Data.MovieddbHelper;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieDetailFrag extends Fragment {
+public class MovieDetailFrag extends Fragment implements View.OnClickListener {
 
 
     /*
@@ -48,16 +59,23 @@ public class MovieDetailFrag extends Fragment {
 
         @BindView(R.id.plot_synop)
         TextView plotSynop;
+    */
         public MovieDetailFrag() {
             // Required empty public constructor
         }
-    */
-    int position=Movie.position_fordetailfrag;
+    int position= Movie.position_fordetailfrag;
     RequestQueue requestQueue;
+
+    SQLiteOpenHelper movieDB;
 
     Movie movie;
     String BASE_URL = "http://api.themoviedb.org/3/movie/";
     String final_URL;
+    String rel_year;
+    Button favMov;
+    SQLiteDatabase db;
+    ContentValues input;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,8 +83,14 @@ public class MovieDetailFrag extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 //        ButterKnife.bind(this, view);
+
+        movieDB = new MovieddbHelper(getActivity());
+        db = movieDB.getWritableDatabase();
         movie = Movie.movieArray[position];
         makeRequest();
+
+        TextView title=(TextView) view.findViewById(R.id.text_Title);
+        title.setText(movie.getmmTitle());
 
         ImageView poster = (ImageView) view.findViewById(R.id.movie_poster);
         String image_URL = "http://image.tmdb.org/t/p/w185" + movie.getImgPath();
@@ -74,6 +98,7 @@ public class MovieDetailFrag extends Fragment {
 
         TextView release_year=(TextView) view.findViewById(R.id.release_year);
         String[] date = movie.getmRelDate().split("-");
+        rel_year=date[0];
         release_year.setText(date[0]);
 
         TextView Rating=(TextView) view.findViewById(R.id.rating);
@@ -82,6 +107,18 @@ public class MovieDetailFrag extends Fragment {
         TextView plotSynop=(TextView) view.findViewById(R.id.plot_synop);
         plotSynop.setText(movie.getPlotsynop());
 
+        favMov=(Button) view.findViewById(R.id.favoriteMov);
+        Cursor c=db.rawQuery("select "+ Movie_Contract.MovieEntry.TITLE+" from "+ Movie_Contract.MovieEntry.TABLE_NAME+" where "+ Movie_Contract.MovieEntry.TITLE+"="+"\""+movie.getmmTitle()+"\"",null);
+        int a=c.getCount();
+        if(c.getCount()>0)
+        {
+            favMov.setText("Fav");
+        }
+        else {
+        favMov.setText("Mark");
+            favMov.setOnClickListener(this);
+        }
+        c.close();
 
         return view;
     }
@@ -112,12 +149,18 @@ public class MovieDetailFrag extends Fragment {
                             }
 
                             videoFraagment vf=new videoFraagment();
-                            vf.vilist= Arrays.asList(Video.videarray);
-                            getFragmentManager().beginTransaction().replace(R.id.vid_container,vf).commit();
+                          try {
+                             vf.vilist = Arrays.asList(Video.videarray);
+                              getFragmentManager().beginTransaction().replace(R.id.vid_container,vf).commit();
+
+                          }catch (Exception e)
+                          {
+                              Toast.makeText(getActivity(),"Error in Fetching Video Data",Toast.LENGTH_SHORT).show();
+                          }
 
                         } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                           e.printStackTrace();
+                         }
                     }
                 },
                 new Response.ErrorListener() {
@@ -139,6 +182,21 @@ public class MovieDetailFrag extends Fragment {
                         try {
                             JSONArray ja = response.getJSONArray("results");
 
+                            Review.review=new Review[ja.length()];
+
+                            for (int i=0;i<ja.length();i++)
+                            {
+                                JSONObject job=ja.getJSONObject(i);
+                                Review review1=new Review();
+                                review1.author=job.getString("author");
+                                review1.content=job.getString("content");
+                                Review.review[i]=review1;
+                            }
+
+                            ReviewFragment rf=new ReviewFragment();
+                            rf.relist=Arrays.asList(Review.review);
+                            getFragmentManager().beginTransaction().replace(R.id.Review_container,rf).commit();
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -159,5 +217,54 @@ public class MovieDetailFrag extends Fragment {
         requestQueue.add(jor2);
     }
 
+
+    @TargetApi(23)
+    @Override
+    public void onClick(View view) {
+        try {
+
+            if(ifTableExists()) {
+                    input = new ContentValues();
+                    input.put(Movie_Contract.MovieEntry.TITLE, movie.getmmTitle());
+                    input.put(Movie_Contract.MovieEntry.RELEASE, rel_year);
+                    input.put(Movie_Contract.MovieEntry.VOTE, movie.getVoteAvg());
+                    input.put(Movie_Contract.MovieEntry.PLOT, movie.getPlotsynop());
+                    input.put(Movie_Contract.MovieEntry.IMAGE, movie.getImgPath());
+                    input.put(Movie_Contract.MovieEntry.REVIEW, BASE_URL + movie.get_id() + "reviews?" + Movie.api_key);
+                    input.put(Movie_Contract.MovieEntry.MOVIE_ID, movie.get_id());
+                    input.put(Movie_Contract.MovieEntry.VIDEO, BASE_URL + movie.get_id() + "videos?" + Movie.api_key);
+                    int r_id = (int) db.insert(Movie_Contract.MovieEntry.TABLE_NAME, null, input);
+                    if (r_id == -1) {
+                        Toast.makeText(getActivity(), "Something Wrong", Toast.LENGTH_SHORT).show();
+                    }
+                else {
+                        favMov.setText("Fav");
+                        favMov.setOnClickListener(null);
+                    }
+
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "No Table", Toast.LENGTH_SHORT).show();
+            }
+        }catch(Exception e)
+        {
+            Log.e("Movie_DB_ERROR", String.valueOf(e));
+            Toast.makeText(getActivity(),"try again."+String.valueOf(e),Toast.LENGTH_SHORT).show();
+        }
+        }
+
+    public boolean ifTableExists()
+    {
+        Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"+ Movie_Contract.MovieEntry.TABLE_NAME+"'", null);
+        if(cursor!=null) {
+            if(cursor.getCount()>0) {
+                cursor.close();
+                return true;
+            }
+            cursor.close();
+        }
+        return false;
+    }
 
 }

@@ -1,4 +1,4 @@
-package abhiroj95.com.popular_movies_stage_2;
+package abhiroj95.com.popular_movies_stage_2.Data;
 
 /**
  * Created by APnaturals on 7/1/2016.
@@ -12,7 +12,7 @@ public class Movie {
     String videoPath;
     String reviewPath;
     String _id;
-     static int position_fordetailfrag;
+     public static int position_fordetailfrag;
     public static final String api_key="api_key=98ee66ec333fc7b3902c1f87cbfea17a";
 
 

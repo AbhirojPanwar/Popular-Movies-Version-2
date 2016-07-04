@@ -12,6 +12,8 @@ import android.widget.GridView;
 
 import java.util.List;
 
+import abhiroj95.com.popular_movies_stage_2.Data.Movie;
+
 
 /**
  * A simple {@link Fragment} subclass.

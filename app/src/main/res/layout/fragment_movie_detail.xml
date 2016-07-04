@@ -11,6 +11,17 @@
     android:padding="1dp"
     tools:context="abhiroj95.com.popular_movies_stage_2.MovieDetailFrag">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_Title"
+        android:fontFamily="sans-serif-condensed"
+        android:background="#03A9F4"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center_horizontal"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:padding="10dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,12 +78,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Trailers:"
-        android:textSize="15sp"
+        android:textSize="22sp"
+        android:textStyle="bold"
         android:layout_marginTop="5dp"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/vid_container"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reviews:"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginTop="5dp"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/Review_container"/>
   </LinearLayout>
 </ScrollView>

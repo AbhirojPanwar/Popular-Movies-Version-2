@@ -11,6 +11,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import abhiroj95.com.popular_movies_stage_2.Data.Movie;
+
 /**
  * Created by APnaturals on 7/1/2016.
  */

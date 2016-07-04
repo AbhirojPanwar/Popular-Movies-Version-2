@@ -4,9 +4,9 @@
     tools:context="abhiroj95.com.popular_movies_stage_2.videoFraagment">
 
     <abhiroj95.com.popular_movies_stage_2.Utility.ExpendableHeightListView
-        android:id="@+id/trailer_list"
+        android:id="@+id/review_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-      android:scrollbars="none"/>
+        android:scrollbars="none"/>
 
 </FrameLayout>
