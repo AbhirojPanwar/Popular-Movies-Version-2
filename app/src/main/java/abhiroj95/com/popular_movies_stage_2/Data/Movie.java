@@ -1,9 +1,11 @@
 package abhiroj95.com.popular_movies_stage_2.Data;
 
+import java.io.Serializable;
+
 /**
  * Created by APnaturals on 7/1/2016.
  */
-public class Movie {
+public class Movie implements Serializable{
     String mTitle;
     String mRelDate;
     String vote_avg;
@@ -12,11 +14,22 @@ public class Movie {
     String videoPath;
     String reviewPath;
     String _id;
+    int position_fordb;
+    public static int posfdf;
      public static int position_fordetailfrag;
     public static final String api_key="api_key=98ee66ec333fc7b3902c1f87cbfea17a";
 
 
     public static Movie[] movieArray;
+
+    public void setposition_fordb(int pdb){
+        position_fordb=pdb;
+    }
+
+    public int getposition_fordb()
+    {
+        return position_fordb;
+    }
 
 
     public  void set_id(String id)

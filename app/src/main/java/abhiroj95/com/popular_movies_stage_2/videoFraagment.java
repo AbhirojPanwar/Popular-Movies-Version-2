@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import java.util.Arrays;
 import java.util.List;
 
 import abhiroj95.com.popular_movies_stage_2.Utility.ExpendableHeightListView;
@@ -26,6 +27,15 @@ public class videoFraagment extends Fragment {
     ExpendableHeightListView majorList;
     public videoFraagment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState!=null)
+        {
+            vilist= Arrays.asList((Video[]) savedInstanceState.getSerializable("VIDEO"));
+        }
+        super.onCreate(savedInstanceState);
     }
 
 
@@ -51,7 +61,11 @@ public class videoFraagment extends Fragment {
         return view;
     }
 
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("VIDEO",Video.videarray);
+        super.onSaveInstanceState(outState);
+    }
 
 
 }

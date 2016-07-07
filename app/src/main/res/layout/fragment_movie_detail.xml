@@ -8,7 +8,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="1dp"
     tools:context="abhiroj95.com.popular_movies_stage_2.MovieDetailFrag">
 
     <TextView

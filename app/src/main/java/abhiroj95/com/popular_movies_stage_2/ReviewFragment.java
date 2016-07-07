@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Arrays;
 import java.util.List;
 
 import abhiroj95.com.popular_movies_stage_2.Utility.ExpendableHeightListView;
@@ -25,6 +26,15 @@ public class ReviewFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState!=null)
+        {
+            relist= Arrays.asList((Review[]) savedInstanceState.getSerializable("REVIEW"));
+        }
+        super.onCreate(savedInstanceState);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,6 +46,12 @@ public class ReviewFragment extends Fragment {
         majorList.setAdapter(rAdap);
         majorList.setExpanded(true);
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("REVIEW",Review.review);
+        super.onSaveInstanceState(outState);
     }
 
 

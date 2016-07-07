@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import abhiroj95.com.popular_movies_stage_2.Data.Movie;
@@ -109,7 +111,6 @@ public class MovieDetailFrag extends Fragment implements View.OnClickListener {
 
         favMov=(Button) view.findViewById(R.id.favoriteMov);
         Cursor c=db.rawQuery("select "+ Movie_Contract.MovieEntry.TITLE+" from "+ Movie_Contract.MovieEntry.TABLE_NAME+" where "+ Movie_Contract.MovieEntry.TITLE+"="+"\""+movie.getmmTitle()+"\"",null);
-        int a=c.getCount();
         if(c.getCount()>0)
         {
             favMov.setText("Fav");
@@ -123,12 +124,31 @@ public class MovieDetailFrag extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    @Override
+    public void onDetach() {
+    db.close();
+        movieDB.close();
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+       super.onDetach();
+    }
+
     public void makeRequest() {
         String id = movie.get_id() + "/";
         final_URL = BASE_URL + id + "videos?" + Movie.api_key;
         requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, final_URL, null,
                 new Response.Listener<JSONObject>() {
+                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
                     @Override
                     public void onResponse(JSONObject response) {
 
@@ -151,11 +171,11 @@ public class MovieDetailFrag extends Fragment implements View.OnClickListener {
                             videoFraagment vf=new videoFraagment();
                           try {
                              vf.vilist = Arrays.asList(Video.videarray);
-                              getFragmentManager().beginTransaction().replace(R.id.vid_container,vf).commit();
+                             getChildFragmentManager().beginTransaction().replace(R.id.vid_container,vf).commitAllowingStateLoss();
 
                           }catch (Exception e)
                           {
-                              Toast.makeText(getActivity(),"Error in Fetching Video Data",Toast.LENGTH_SHORT).show();
+                             e.printStackTrace();
                           }
 
                         } catch (JSONException e) {
@@ -176,6 +196,7 @@ public class MovieDetailFrag extends Fragment implements View.OnClickListener {
 
         JsonObjectRequest jor2 = new JsonObjectRequest(Request.Method.GET, final_URL, null,
                 new Response.Listener<JSONObject>() {
+                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
                     @Override
                     public void onResponse(JSONObject response) {
 
@@ -195,8 +216,15 @@ public class MovieDetailFrag extends Fragment implements View.OnClickListener {
 
                             ReviewFragment rf=new ReviewFragment();
                             rf.relist=Arrays.asList(Review.review);
-                            getFragmentManager().beginTransaction().replace(R.id.Review_container,rf).commit();
-
+                            if(rf!=null) {
+                                try{
+                                    getChildFragmentManager().beginTransaction().replace(R.id.Review_container, rf).commitAllowingStateLoss();
+                                }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -206,7 +234,7 @@ public class MovieDetailFrag extends Fragment implements View.OnClickListener {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("Volley", "Error");
+                        Log.e("Volley", String.valueOf(error));
 
                     }
                 }
@@ -230,9 +258,10 @@ public class MovieDetailFrag extends Fragment implements View.OnClickListener {
                     input.put(Movie_Contract.MovieEntry.VOTE, movie.getVoteAvg());
                     input.put(Movie_Contract.MovieEntry.PLOT, movie.getPlotsynop());
                     input.put(Movie_Contract.MovieEntry.IMAGE, movie.getImgPath());
-                    input.put(Movie_Contract.MovieEntry.REVIEW, BASE_URL + movie.get_id() + "reviews?" + Movie.api_key);
+                    input.put(Movie_Contract.MovieEntry.REVIEW, BASE_URL + movie.get_id() + "/reviews?" + Movie.api_key);
+                    input.put(Movie_Contract.MovieEntry.Position,movie.getposition_fordb());
                     input.put(Movie_Contract.MovieEntry.MOVIE_ID, movie.get_id());
-                    input.put(Movie_Contract.MovieEntry.VIDEO, BASE_URL + movie.get_id() + "videos?" + Movie.api_key);
+                    input.put(Movie_Contract.MovieEntry.VIDEO, BASE_URL + movie.get_id() + "/videos?" + Movie.api_key);
                     int r_id = (int) db.insert(Movie_Contract.MovieEntry.TABLE_NAME, null, input);
                     if (r_id == -1) {
                         Toast.makeText(getActivity(), "Something Wrong", Toast.LENGTH_SHORT).show();

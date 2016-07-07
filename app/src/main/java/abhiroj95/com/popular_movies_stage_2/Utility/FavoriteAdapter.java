@@ -18,20 +18,25 @@ import abhiroj95.com.popular_movies_stage_2.R;
  */
 public class FavoriteAdapter extends CursorAdapter {
     LayoutInflater inflater;
+    Context iContext;
+    Cursor cursor;
     public FavoriteAdapter(Context context, Cursor c) {
         super(context, c);
-    }
+iContext=context;
+    inflater=LayoutInflater.from(iContext);
+    cursor=c;
+}
+
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-
-    View view=inflater.inflate(R.layout.disp_image,viewGroup,false);
+           View view = inflater.inflate(R.layout.disp_image, viewGroup, false);
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ImageView img=(ImageView) view.findViewById(R.id.movie_display);
+        ImageView img=(ImageView) view.findViewById(R.id.movie_poster);
         String url="http://image.tmdb.org/t/p/w185"+cursor.getString(cursor.getColumnIndex(Movie_Contract.MovieEntry.IMAGE));
         Picasso.with(context).load(url).into(img);
     }

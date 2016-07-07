@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import java.util.Arrays;
 import java.util.List;
 
 import abhiroj95.com.popular_movies_stage_2.Data.Movie;
@@ -23,11 +24,9 @@ public class MovieGridFrag extends Fragment {
 
     private GridView moviegrid;
 
-    static  interface MovieListener{
-        void itemClicked(int id);
-    }
 
-    private MovieListener movielistener;
+
+    private ClickCallback movielistener;
     public List<Movie> movieList;
 
     public MovieGridFrag() {
@@ -36,8 +35,15 @@ public class MovieGridFrag extends Fragment {
 
     @Override
     public void onAttach(Activity context) {
-        this.movielistener=(MovieListener) context;
+        this.movielistener=(ClickCallback) context;
         super.onAttach(context);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState!=null)
+        movieList= Arrays.asList((Movie[]) savedInstanceState.getSerializable("OLD"));
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -60,6 +66,12 @@ movielistener.itemClicked(position);
             }
         });
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("OLD",Movie.movieArray);
+        super.onSaveInstanceState(outState);
     }
 
 

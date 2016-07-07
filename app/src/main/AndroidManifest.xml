@@ -26,6 +26,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="abhiroj95.com.popular_movies_stage_2.MainActivity" />
         </activity>
+
+
+
     </application>
 
 </manifest>

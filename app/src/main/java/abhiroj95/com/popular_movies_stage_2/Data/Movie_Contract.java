@@ -23,6 +23,7 @@ public static final String TABLE_NAME="favorite";
         public static String VIDEO="videopath";
         public static String REVIEW="reviewpath";
         public static String MOVIE_ID="mid";
+        public static String Position="position";
 
 
 

@@ -32,10 +32,9 @@ public class MovieddbHelper extends SQLiteOpenHelper {
                 +" TEXt NOT NULL, "+ Movie_Contract.MovieEntry.IMAGE
                 +" TEXT NOT NULL, "+ Movie_Contract.MovieEntry.VIDEO+" TEXT NOT NULL, "
                 + Movie_Contract.MovieEntry.REVIEW+" TEXT NOT NULL, "
-                + Movie_Contract.MovieEntry.MOVIE_ID+" TEXT UNIQUE);";
+                + Movie_Contract.MovieEntry.Position+" INTEGER NOT NULL, "
+                + Movie_Contract.MovieEntry.MOVIE_ID+" TEXT);";
         sqLiteDatabase.execSQL(exec);
-
-
     }
 
     @Override

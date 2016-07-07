@@ -1,5 +1,6 @@
 package abhiroj95.com.popular_movies_stage_2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -13,8 +14,15 @@ public class DetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        MovieDetailFrag mdf=(MovieDetailFrag) getFragmentManager().findFragmentById(R.id.detail_frag);
-
+        Intent i=getIntent();
+        String fragtolaunch=i.getExtras().getString("FRAGMENT");
+        if(fragtolaunch.equals("Movie")) {
+            getFragmentManager().beginTransaction().replace(R.id.detail_frag,new MovieDetailFrag()).commit();
+        }
+        else
+        {
+            getFragmentManager().beginTransaction().replace(R.id.detail_frag,new favoritedetailfragment()).commit();
+        }
     }
 
 
