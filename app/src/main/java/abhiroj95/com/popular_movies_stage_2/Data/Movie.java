@@ -17,7 +17,7 @@ public class Movie implements Serializable{
     int position_fordb;
     public static int posfdf;
      public static int position_fordetailfrag;
-    public static final String api_key="api_key=98ee66ec333fc7b3902c1f87cbfea17a";
+    public static final String api_key="api_key=";
 
 
     public static Movie[] movieArray;
