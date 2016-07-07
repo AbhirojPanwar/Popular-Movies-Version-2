@@ -53,6 +53,13 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
         if(savedInstanceState!=null)
         {
             user_pref=savedInstanceState.getString("USR_PREF");
+            if(HAS_VIEW)
+                Movie.position_fordetailfrag=savedInstanceState.getInt("POS");
+        }
+
+        if(savedInstanceState==null && HAS_VIEW)
+        {
+            Movie.position_fordetailfrag=0;
         }
 
         View view=findViewById(R.id.detail_container);
@@ -76,7 +83,7 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString("USR_PREF",user_pref);
-
+        if(HAS_VIEW) outState.putInt("POS",Movie.position_fordetailfrag);
         super.onSaveInstanceState(outState);
     }
 
@@ -167,6 +174,8 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_popular) {
             if (user_pref != "popular?") {
+                if(HAS_VIEW)
+                Movie.position_fordetailfrag=0;
                 user_pref = "popular?";
                 makeRequest();
                 }
@@ -176,6 +185,7 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
         if (id == R.id.action_topRated)
         {
             if(user_pref!="top_rated?") {
+                if(HAS_VIEW) Movie.position_fordetailfrag=0;
                 user_pref = "top_rated?";
                 makeRequest();
              }
@@ -261,7 +271,6 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
 
     public void defaultforFrag()
     {
-        Movie.position_fordetailfrag=0;
         MovieDetailFrag mdf=new MovieDetailFrag();
         FragmentTransaction ft=getFragmentManager().beginTransaction();
         ft.replace(R.id.detail_container,mdf);
