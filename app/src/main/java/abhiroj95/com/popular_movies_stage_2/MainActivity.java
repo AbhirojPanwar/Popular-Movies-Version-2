@@ -30,7 +30,7 @@ import java.util.Arrays;
 import abhiroj95.com.popular_movies_stage_2.Data.Movie;
 import abhiroj95.com.popular_movies_stage_2.Data.Movie_Contract;
 import abhiroj95.com.popular_movies_stage_2.Data.MovieddbHelper;
-
+import abhiroj95.com.popular_movies_stage_2.Utility.UtilityMethods;
 
 
 public class MainActivity extends ActionBarActivity implements ClickCallback{
@@ -43,13 +43,12 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
     RequestQueue requestQueue;
     boolean HAS_VIEW;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loader=new ProgressDialog(this);
-        loader.setMessage("Please Wait...");
-        loader.show();
         if(savedInstanceState!=null)
         {
             user_pref=savedInstanceState.getString("USR_PREF");
@@ -69,6 +68,9 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
             user_pref="popular?";
         }
         if(user_pref!="favorite" && user_pref!=null) {
+            if(UtilityMethods.isNetworkAvailable(this))
+            loader.setMessage("Please Wait...");
+            loader.show();
             makeRequest();
         }
         else
