@@ -1,7 +1,9 @@
 package abhiroj95.com.popular_movies_stage_2;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,9 +11,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -54,6 +58,24 @@ public class MainActivity extends ActionBarActivity implements ClickCallback{
             user_pref=savedInstanceState.getString("USR_PREF");
             if(HAS_VIEW)
                 Movie.position_fordetailfrag=savedInstanceState.getInt("POS");
+        }
+
+        if(!UtilityMethods.isNetworkAvailable(this))
+        {
+            AlertDialog.Builder dialogbuilder=new AlertDialog.Builder(this);
+            LayoutInflater inflater=this.getLayoutInflater();
+            View view=inflater.inflate(R.layout.dialog_layout,null);
+            TextView tv=(TextView)view.findViewById(R.id.error_message);
+            tv.setText("We have no Internet");
+            dialogbuilder.setTitle("Houston! We have a Problem.").setView(view).setNeutralButton("ok",new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            AlertDialog alertDialog=dialogbuilder.create();
+            alertDialog.show();
+
         }
 
         if(savedInstanceState==null && HAS_VIEW)
