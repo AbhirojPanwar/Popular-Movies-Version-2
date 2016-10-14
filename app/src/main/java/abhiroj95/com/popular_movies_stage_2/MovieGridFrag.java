@@ -14,14 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import abhiroj95.com.popular_movies_stage_2.Data.Movie;
-
-
+import com.etsy.android.grid.StaggeredGridView;
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MovieGridFrag extends Fragment {
 
-
+    StaggeredGridView recipeListView;
     private GridView moviegrid;
 
 
@@ -51,11 +50,11 @@ public class MovieGridFrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_movie_grid, container, false);
-        moviegrid=(GridView) view.findViewById(R.id.movie_display);
+        recipeListView=(StaggeredGridView) view.findViewById(R.id.movie_display);
         MovieGridAdapter movieGridAdapter=new MovieGridAdapter(getActivity(),movieList);
         movieGridAdapter.notifyDataSetChanged();
-        moviegrid.setAdapter(movieGridAdapter);
-        moviegrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        recipeListView.setAdapter(movieGridAdapter);
+        recipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 if(movielistener!=null)
