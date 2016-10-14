@@ -2,10 +2,13 @@
 
 apply plugin: 'com.android.application'
 
+repositories{
+    mavenCentral()
+}
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion '23.0.1'
 
     defaultConfig {
         applicationId "abhiroj95.com.popular_movies_stage_2"
@@ -24,9 +27,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.jakewharton:butterknife:8.1.0'
-
+    compile group: 'com.etsy.android.grid', name: 'library', version: '1.0.5'
 }
